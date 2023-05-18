@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { ClientsModule } from './clients/clients.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
       pass: process.env.DB_PASSWORD,
       dbName: process.env.DB_NAME,
     }),
+    ClientsModule,
   ],
   controllers: [],
   providers: [],

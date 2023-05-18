@@ -1,188 +1,113 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClientsService } from './clients.service';
+import { ClientsController } from './clients.controller';
+import { ConflictException } from '@nestjs/common';
 
-describe('ClientsService', () => {
-  let usersService: ClientsService;
+describe('ClientsController', () => {
+  let clientsController: ClientsController;
+  let clientsService: ClientsService;
 
-  const usersMock = new UsersMock();
-
-  const mockClientsRepository = {
-    create: jest.fn(),
-    save: jest.fn(),
-    find: jest.fn(),
-    findOne: jest.fn(),
-    preload: jest.fn(),
-    remove: jest.fn(),
+  const mockClientsService = {
+    insertOne: jest.fn(),
+    findAll: jest.fn(),
   };
+
+  const clientsMock = [
+    {
+      _id: '64665f32599da225fff800c4',
+      name: 'Fulano da Silva',
+      email: 'fulano@email.com',
+      phoneNumber: '13998895544',
+      __v: 0,
+    },
+    {
+      _id: '64665f32599da225fff800c3',
+      name: 'Ciclano da Silva',
+      email: 'ciclano@email.com',
+      phoneNumber: '5516998895544',
+      __v: 0,
+    },
+  ];
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ClientsService,
+        ClientsController,
         {
-          provide: getRepositoryToken(User),
-          useValue: mockUserRepository,
+          provide: ClientsService,
+          useValue: mockClientsService,
         },
       ],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
+    clientsController = module.get<ClientsController>(ClientsController);
+    clientsService = module.get<ClientsService>(ClientsService);
   });
 
   beforeEach(async () => {
-    for (const key in mockUserRepository) {
-      mockUserRepository[key].mockReset();
-    }
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
-    expect(usersService).toBeDefined();
+    expect(clientsController).toBeDefined();
+    expect(clientsService).toBeDefined();
   });
 
   describe('findAll', () => {
     it('should return all users', async () => {
       // Arrange
-      mockUserRepository.find.mockReturnValue(usersMock.getValidUsers());
+      jest
+        .spyOn(clientsService, 'findAll')
+        .mockImplementation(async () => clientsMock);
 
       // Act
-      const users = await usersService.findAll();
+      const result = await clientsController.findAll();
 
       // Assert
-      expect(users).toHaveLength(usersMock.getUsersLength());
-      expect(mockUserRepository.find).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('findOneById', () => {
-    it('should return an existing user', async () => {
-      // Arrange
-      const mockUser = usersMock.getValidUser();
-      mockUserRepository.findOne.mockReturnValue(mockUser);
-
-      // Act
-      const user = await usersService.findOneById(mockUser.id);
-
-      // Assert
-      expect(user).toMatchObject(mockUser);
-      expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return NotFoundException when user does not exist', async () => {
-      // Arrange
-      mockUserRepository.findOne.mockReturnValue(null);
-
-      // Act, Assert
-      await expect(
-        usersService.findOneById(usersMock.invalidId),
-      ).rejects.toThrow(NotFoundException);
-      expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('findOneByEmail', () => {
-    it('should return an existing user', async () => {
-      // Arrange
-      const mockUser = usersMock.getValidUser();
-      mockUserRepository.findOne.mockReturnValue(mockUser);
-
-      // Act
-      const user = await usersService.findOneByEmail(mockUser.email);
-
-      // Assert
-      expect(user).toMatchObject(mockUser);
-      expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return NotFoundException when user does not exist', async () => {
-      // Arrange
-      mockUserRepository.findOne.mockReturnValue(null);
-
-      // Act, Assert
-      await expect(
-        usersService.findOneByEmail(usersMock.invalidEmail),
-      ).rejects.toThrow(NotFoundException);
-      expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(result.clients).toHaveLength(2);
+      expect(mockClientsService.findAll).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('create', () => {
-    it('should create and return an user', async () => {
+    it('should return a created client', async () => {
       // Arrange
-      const mockUser = usersMock.getCreateUserInput();
-      mockUserRepository.create.mockReturnValue(mockUser);
-      mockUserRepository.save.mockReturnValue(usersMock.getCreatedUser());
+      const clientDTOMock = {
+        name: 'Fulano da Silva',
+        email: 'fulano@email.com',
+        phoneNumber: '13998895544',
+      };
+
+      mockClientsService.insertOne.mockReturnValue(clientsMock[0]);
 
       // Act
-      const user = await usersService.create(mockUser);
+      const client = await clientsController.create(clientDTOMock);
 
       // Assert
-      expect(user).toMatchObject(mockUser);
-      expect(mockUserRepository.create).toHaveBeenCalledTimes(1);
-      expect(mockUserRepository.save).toHaveBeenCalledTimes(1);
+      expect(client).toMatchObject(clientDTOMock);
+      expect(mockClientsService.insertOne).toHaveBeenCalledTimes(1);
     });
   });
 
-  describe('update', () => {
-    it('should update and return an existing user', async () => {
+  describe('create', () => {
+    it('should throw an conflict exception because email already exists', async () => {
       // Arrange
-      const mockUser = usersMock.getValidUser();
-      const updatedUserInput = { id: mockUser.id, name: 'Updated Name' };
-      const userResponse = { ...mockUser, name: 'Updated Name' };
-      mockUserRepository.preload.mockReturnValue(userResponse);
-      mockUserRepository.save.mockReturnValue(userResponse);
-
-      // Act
-      const user = await usersService.update(mockUser.id, updatedUserInput);
-
-      // Assert
-      expect(user).toMatchObject(userResponse);
-      expect(mockUserRepository.preload).toHaveBeenCalledTimes(1);
-      expect(mockUserRepository.save).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return NotFoundException when user does not exist', async () => {
-      // Arrange
-      const updatedUserInput = {
-        id: usersMock.invalidId,
-        name: 'Updated Name',
+      const clientDTOMock = {
+        name: 'Fulano da Silva',
+        email: 'fulano@email.com',
+        phoneNumber: '13998895544',
       };
-      mockUserRepository.preload.mockReturnValue(null);
+
+      mockClientsService.insertOne.mockRejectedValueOnce(
+        new ConflictException('Email already exists'),
+      );
 
       // Act, Assert
       await expect(
-        usersService.update(usersMock.invalidId, updatedUserInput),
-      ).rejects.toThrow(NotFoundException);
-      expect(mockUserRepository.preload).toHaveBeenCalledTimes(1);
-      expect(mockUserRepository.save).toHaveBeenCalledTimes(0);
-    });
-  });
+        async () => await clientsController.create(clientDTOMock),
+      ).rejects.toThrow(ConflictException);
 
-  describe('remove', () => {
-    it('should remove and return the removed user', async () => {
-      // Arrange
-      const mockUser = usersMock.getValidUser();
-      mockUserRepository.findOne.mockReturnValue(mockUser);
-      mockUserRepository.remove.mockReturnValue(mockUser);
-
-      // Act
-      const user = await usersService.remove(mockUser.id);
-
-      // Assert
-      expect(user).toMatchObject(mockUser);
-      expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(mockUserRepository.remove).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return NotFoundException when user does not exist', async () => {
-      // Arrange
-      mockUserRepository.findOne.mockReturnValue(null);
-
-      // Act, Assert
-      await expect(usersService.remove(usersMock.invalidId)).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(mockUserRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(mockUserRepository.remove).toHaveBeenCalledTimes(0);
+      expect(mockClientsService.insertOne).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -96,28 +96,6 @@ describe('ClientsController', () => {
       expect(response.body).toMatchObject(client);
     });
 
-    it('should throw an Conflict exception because email already exists', async () => {
-      // Arrange
-      await dbConnection.collection('clients').insertOne({
-        name: 'Fulano da Silva',
-        email: 'fulano@email.com',
-        phoneNumber: '13998895544',
-      });
-
-      // Act
-      const response = await request(httpServer).post('/clients').send({
-        name: 'Fulano da Silva',
-        email: 'fulano@email.com',
-        phoneNumber: '13998895544',
-      });
-
-      // Assert
-      expect(response.statusCode).toEqual(409);
-      expect(JSON.parse(response.text)).toMatchObject({
-        message: 'Email already exists',
-      });
-    });
-
     it('should throw an Bad Request exception because request data is wrong', async () => {
       // Arrange
       const client = {

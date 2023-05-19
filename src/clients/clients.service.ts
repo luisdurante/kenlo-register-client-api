@@ -17,8 +17,6 @@ export class ClientsService {
       const client = await this.clientModel.create(createClientDto);
       return client;
     } catch (error) {
-      if (error.code === 11000)
-        throw new ConflictException('Email already exists');
       throw new InternalServerErrorException(`Error code: ${error.code}`);
     }
   }

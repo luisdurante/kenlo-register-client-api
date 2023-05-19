@@ -12,8 +12,14 @@ import { ConfigService } from '@nestjs/config';
             ? configService.get<string>('DB_TEST_HOST')
             : configService.get<string>('DB_HOST'),
         useNewUrlParser: true,
-        user: configService.get<string>('DB_USER'),
-        pass: configService.get<string>('DB_PASSWORD'),
+        user:
+          configService.get<string>('NODE_ENV') === 'test'
+            ? configService.get<string>('DB_TEST_USER')
+            : configService.get<string>('DB_USER'),
+        pass:
+          configService.get<string>('NODE_ENV') === 'test'
+            ? configService.get<string>('DB_TEST_PASSWORD')
+            : configService.get<string>('DB_PASSWORD'),
         dbName:
           configService.get<string>('NODE_ENV') === 'test'
             ? configService.get<string>('DB_TEST_NAME')

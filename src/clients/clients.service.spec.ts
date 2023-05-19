@@ -4,7 +4,6 @@ import { getModelToken } from '@nestjs/mongoose';
 import { ClientDocument } from './schemas/client.schema';
 import { Model, Query } from 'mongoose';
 import { createMock } from '@golevelup/ts-jest';
-import { ConflictException } from '@nestjs/common';
 
 describe('UsersService', () => {
   let clientsService: ClientsService;

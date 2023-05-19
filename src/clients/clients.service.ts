@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';

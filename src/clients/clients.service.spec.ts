@@ -93,25 +93,5 @@ describe('UsersService', () => {
       expect(client).toMatchObject(clientsMock[0]);
       expect(mockClientsModel.create).toHaveBeenCalledTimes(1);
     });
-
-    it('should throw an conflict exception because email already exists', async () => {
-      // Arrange
-      const clientMock = {
-        name: 'Fulano da Silva',
-        email: 'fulano@email.com',
-        phoneNumber: '13998895544',
-      };
-      mockClientsModel.create.mockReturnValue(
-        Promise.reject({
-          code: 11000,
-        }),
-      );
-
-      // Act, Assert
-      await expect(clientsService.insertOne(clientMock)).rejects.toThrow(
-        ConflictException,
-      );
-      expect(mockClientsModel.create).toHaveBeenCalledTimes(1);
-    });
   });
 });

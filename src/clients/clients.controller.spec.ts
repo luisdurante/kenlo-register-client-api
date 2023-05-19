@@ -18,14 +18,12 @@ describe('ClientsController', () => {
       name: 'Fulano da Silva',
       email: 'fulano@email.com',
       phoneNumber: '13998895544',
-      __v: 0,
     },
     {
       _id: '64665f32599da225fff800c3',
       name: 'Ciclano da Silva',
       email: 'ciclano@email.com',
       phoneNumber: '5516998895544',
-      __v: 0,
     },
   ];
 

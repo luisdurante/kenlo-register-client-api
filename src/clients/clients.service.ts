@@ -22,6 +22,8 @@ export class ClientsService {
   }
 
   findAll(): Promise<Client[]> {
-    return this.clientModel.find().exec();
+    return this.clientModel
+      .find({ email: { $exists: true } }, { __v: 0 })
+      .exec();
   }
 }

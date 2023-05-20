@@ -1,73 +1,169 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# kenlo-chatgpt-integration-api
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Esta documentação pertence a um dos projetos do teste para a vaga de Pessoa desenvolvedora Back-end. Especificamente o **Desafio 1** (**API1**)
 
-## Description
+## Sobre o Desafio
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**API1** - Realiza um cadastro inicial de um possível cliente e armazena em um banco de dados noSQL
 
-## Installation
+**API2** - Interage com uma única pergunta do usuário em uma integração com ChatGPT e armazena na mesma collection onde se encontra os dados do cliente
 
-```bash
-$ npm install
+### Requisitos
+
+✅ Seu serviço deve ser acessível através de uma API REST 
+
+✅ Você deverá desenvolver 2 APIs 
+
+✅ Seu serviço deve validar os dados de entrada
+
+✅ Os dados coletados para cadastro são: nome, email e telefone
+
+✅ Seu serviço deve utilizar um banco noSQL
+
+✅ Integrado ao ChatGPT (documentação)
+
+✅ Aconselhado utilizar containers para o desenvolvimento (Docker)
+
+✅ Disponibilizar os serviços Online
+
+### Requisitos adicionais
+
+✅Boas práticas de desenvolvimento
+
+✅Padrões de codificação
+
+✅Execução utilizando docker
+
+✅Readme bem estruturado explicando a arquitetura e instruções para subir os microserviços
+
+✅Código no GitHub, demonstrando conhecimento em sua utilização
+
+✅Swagger
+
+✅Teste unitário e teste de integração
+
+✅CI/CD
+
+## Arquitetura 
+
+A arquitetura está distribuida da seguinte forma:
+
+![Architecture](./assets/architecture.png)
+
+Ambas as APIs isoladas que podem ser acessadas a partir de um API Gateway. 
+
+Ao acessar o endpoint **_/clients_** o redirecionamento será para a API de registro de clientes
+
+Utilizando o endpoint **_/interactions_** o redirecionamento será para a API de interação com o ChatGPT cujo endpoint interno é **_/questions_**
+
+## Sobre a API
+
+Uma API que recebe dados de potenciais clientes e armazena em um banco de dados NoSQL (MongoDB)
+
+### Referência
+
+URL do gateway: https://kenlo-test-api-gateway-7vbw2aqt.uc.gateway.dev
+
+### **Listar todos os potenciais clientes**
+
+<br>
+
+```http
+  GET /clients
 ```
 
-## Running the app
+### **Cadastrar potenciais clientes**
 
-```bash
-# development
-$ npm run start
+<br>
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```http
+  POST /clients
 ```
 
-## Test
+JSON Body
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```json
+  {
+      "message": "Example message"
+  }
 ```
 
-## Support
+| Campo         | Tipo     | Descrição                                           |
+| :------------ | :------- | :---------------------------------------------------|
+| `name`        | `string` | **Required**. Nome do cliente                       |
+| `email`       | `string` | **Required**. Email do cliente                      |
+| `phoneNumber` | `string` | **Required**. Numero de telefone do cliente         |
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+O campo phoneNumber deve obedecer a seguinte regex: 
 
-## Stay in touch
+`/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/`
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Algumas das possíveis entradas:
 
-## License
+- 551399886-1122
+- +55 (11) 91122-3344
+- +55 1191122-3344
+- 55(13)91122-3344
+- 5513911223344
+- 13997763344
+- 13 911223344
+- (13) 1122-3344
 
-Nest is [MIT licensed](LICENSE).
+### Como rodar localmente
+
+Para rodar a API localmente com mais facilidade, é recomendada a instalação do _docker_.
+
+- Clone o repositório com o comando `git clone https://github.com/luisdurante/kenlo-register-client-api.git`
+- Instale as dependências com `npm install`
+- Na raiz do projeto, crie um arquivo _**.env**_ com as variáveis necessárias
+- Vamos iniciar os containers com o comando `docker-compose up`
+
+Após isso conseguimos acessar os endpoints locais, (e.g http://localhost:3000/clients)
+
+No docker-compose, foi adicionado o mongo-express, um manager para facilitar a administração do banco de dados local. Basta acessá-lo pela url http://localhost:8081
+
+Para rodar os testes, basta deixar os containers ativos e em outro terminal digitar:
+
+- `npm run test` para os testes unitários
+- `npm run test:e2e` para os testes de integração 
+
+### Criando o arquivo .env
+Nosso arquivo _.env_ deve ter as seguintes variáveis
+
+- DB_HOST 
+    - O host para conectar no banco de dados, como iremos usar o Docker, podemos colocar `mongodb://mongodb:27017`
+- DB_TEST_HOST 
+    - O host para conectar no banco de dados de testes, como iremos usar o Docker, podemos colocar `mongodb://localhost:27017`, para rodarmos os testes de integração fora do container.
+- DB_USER 
+    - Usuário para conectar ao banco, de acordo com o docker-compose, colocaremos `admin`
+- DB_PASSWORD 
+    - Senha para conectar ao banco,de acordo com o docker-compose, colocaremos `root`
+- DB_TEST_USER 
+    - Usuário para conectar ao banco de testes, de acordo com o docker-compose, colocaremos `admin`
+- DB_TEST_PASSWORD 
+    - Senha para conectar ao banco de testes, de acordo com o docker-compose, colocaremos `root`
+- DB_NAME 
+    - Nome do banco que será gerado, para seguirmos o docker-compose, colocaremos `kenlo`
+- DB_TEST_Name
+    - Nome do banco de testes que será gerado
+- PORT
+    - Porta que o app rodará, de acordo com o docker-compose, colocaremos `3000`
+
+#### Exemplo de entradas de um arquivo .env
+
+```text
+DB_HOST=mongodb://mongodb:27017
+DB_TEST_HOST=mongodb://localhost:27017
+
+DB_USER=admin
+DB_PASSWORD=root
+
+DB_TEST_USER=admin
+DB_TEST_PASSWORD=root
+
+DB_NAME=kenlo
+DB_TEST_Name=tests
+
+PORT=3000
+```

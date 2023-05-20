@@ -5,14 +5,13 @@ import { ClientDocument } from './schemas/client.schema';
 import { Model, Query } from 'mongoose';
 import { createMock } from '@golevelup/ts-jest';
 
-describe('UsersService', () => {
+describe('ClientsService', () => {
   let clientsService: ClientsService;
   let clientsModel: Model<ClientDocument>;
 
-  const mockClientsModel = {
+  const clientsModelMock = {
     create: jest.fn(),
     find: jest.fn(),
-    exec: jest.fn(),
   };
 
   const clientsMock = [
@@ -36,7 +35,7 @@ describe('UsersService', () => {
         ClientsService,
         {
           provide: getModelToken('Client'),
-          useValue: mockClientsModel,
+          useValue: clientsModelMock,
         },
       ],
     }).compile();
@@ -68,7 +67,7 @@ describe('UsersService', () => {
 
       // Assert
       expect(clients).toHaveLength(2);
-      expect(mockClientsModel.find).toHaveBeenCalledTimes(1);
+      expect(clientsModelMock.find).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -81,14 +80,14 @@ describe('UsersService', () => {
         phoneNumber: '13998895544',
       };
 
-      mockClientsModel.create.mockReturnValue(clientsMock[0]);
+      clientsModelMock.create.mockReturnValue(clientsMock[0]);
 
       // Act
       const client = await clientsService.insertOne(clientDTOMock);
 
       // Assert
       expect(client).toMatchObject(clientsMock[0]);
-      expect(mockClientsModel.create).toHaveBeenCalledTimes(1);
+      expect(clientsModel.create).toHaveBeenCalledTimes(1);
     });
   });
 });

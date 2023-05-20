@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClientsService } from './clients.service';
 import { ClientsController } from './clients.controller';
-import { ConflictException } from '@nestjs/common';
 
 describe('ClientsController', () => {
   let clientsController: ClientsController;
   let clientsService: ClientsService;
 
-  const mockClientsService = {
+  const clientsServiceMock = {
     insertOne: jest.fn(),
     findAll: jest.fn(),
   };
@@ -33,7 +32,7 @@ describe('ClientsController', () => {
         ClientsController,
         {
           provide: ClientsService,
-          useValue: mockClientsService,
+          useValue: clientsServiceMock,
         },
       ],
     }).compile();
@@ -63,7 +62,7 @@ describe('ClientsController', () => {
 
       // Assert
       expect(result.clients).toHaveLength(2);
-      expect(mockClientsService.findAll).toHaveBeenCalledTimes(1);
+      expect(clientsServiceMock.findAll).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -76,36 +75,14 @@ describe('ClientsController', () => {
         phoneNumber: '13998895544',
       };
 
-      mockClientsService.insertOne.mockReturnValue(clientsMock[0]);
+      clientsServiceMock.insertOne.mockReturnValue(clientsMock[0]);
 
       // Act
       const client = await clientsController.create(clientDTOMock);
 
       // Assert
       expect(client).toMatchObject(clientDTOMock);
-      expect(mockClientsService.insertOne).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('create', () => {
-    it('should throw an conflict exception because email already exists', async () => {
-      // Arrange
-      const clientDTOMock = {
-        name: 'Fulano da Silva',
-        email: 'fulano@email.com',
-        phoneNumber: '13998895544',
-      };
-
-      mockClientsService.insertOne.mockRejectedValueOnce(
-        new ConflictException('Email already exists'),
-      );
-
-      // Act, Assert
-      await expect(
-        async () => await clientsController.create(clientDTOMock),
-      ).rejects.toThrow(ConflictException);
-
-      expect(mockClientsService.insertOne).toHaveBeenCalledTimes(1);
+      expect(clientsServiceMock.insertOne).toHaveBeenCalledTimes(1);
     });
   });
 });

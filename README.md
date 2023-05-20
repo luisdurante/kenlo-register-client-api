@@ -85,7 +85,9 @@ JSON Body
 
 ```json
   {
-      "message": "Example message"
+	  "name": "ExampleName",
+	  "email": "example@email.com",
+	  "phoneNumber": "5513911223344"
   }
 ```
 

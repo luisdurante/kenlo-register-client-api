@@ -1,5 +1,5 @@
 
-# kenlo-chatgpt-integration-api
+# kenlo-register-client-api
 
 Esta documentação pertence a um dos projetos do teste para a vaga de Pessoa desenvolvedora Back-end. Especificamente o **Desafio 1** (**API1**)
 
